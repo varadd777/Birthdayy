@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Surprise 🎁</title>
+<style>
+  :root{
+    --bg1:#fff0fb;
+    --bg2:#f6f8ff;
+    --card:#fff;
+    --accent:#f5a7c1;
+    --muted:#6b5563;
+  }
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background: linear-gradient(180deg,var(--bg1),var(--bg2));}
+  .wrap{min-height:100vh; padding:28px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px; position:relative; overflow:hidden;}
+  h1{ margin:0; color:#5a2940; font-size:26px;}
+  p{ margin:0; color:var(--muted); }
+
+  .party { position:absolute; inset:0; pointer-events:none; }
+  .pop { position:absolute; font-size:22px; opacity:0.95; transform-origin:center; animation:floaty 6s ease-in-out infinite; }
+  @keyframes floaty {
+    0%{ transform:translateY(0) rotate(0) }
+    50%{ transform:translateY(-16px) rotate(8deg) }
+    100%{ transform:translateY(0) rotate(0) }
+  }
+
+  .stage { z-index:2; display:flex; gap:30px; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .box {
+    width:220px; height:240px; background:linear-gradient(180deg,#fff,#fff7fb); border-radius:16px; box-shadow:0 14px 40px rgba(120,60,100,0.08);
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; position:relative; cursor:pointer; transition:transform .18s;
+    border:1px solid rgba(255,255,255,0.6);
+  }
+  .box:hover{ transform:translateY(-6px) scale(1.01); }
+  .lid { width:110%; height:42px; background:linear-gradient(90deg,#ffdce8,#ffd5e6); border-radius:12px 12px 6px 6px; position:absolute; top:-18px; transform-origin:center center; transition:transform .4s ease; display:flex; align-items:center; justify-content:center; font-weight:700; color:#572737;}
+  .ribbon { position:absolute; top:38%; width:12px; height:110px; background:linear-gradient(180deg,#ff9fbf,#ff6a95); left:50%; transform:translateX(-50%); border-radius:6px; opacity:0.95; }
+
+  .modalWrap { position:fixed; inset:0; background:rgba(10,6,10,0.45); display:none; align-items:center; justify-content:center; z-index:9; }
+  .modal {
+    width:min(720px,92%); background:var(--card); border-radius:12px; padding:18px; box-shadow:0 18px 60px rgba(80,40,80,0.2);
+  }
+  .question { font-size:18px; margin-bottom:10px; color:#51293c; }
+  .options { display:flex; gap:8px; flex-wrap:wrap; }
+  .opt { padding:10px 12px; border-radius:10px; background:linear-gradient(180deg,#fff0f5,#fff); border:1px solid rgba(200,180,190,0.6); cursor:pointer; }
+  .closeBtn { display:inline-block; margin-top:12px; padding:8px 12px; border-radius:10px; background:linear-gradient(90deg,#ff9bb8,#ffbfd9); color:white; text-decoration:none; font-weight:700; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="party" aria-hidden="true">
+      <div class="pop" style="left:6%; top:14%;">🎉</div>
+      <div class="pop" style="left:92%; top:26%;">🎈</div>
+      <div class="pop" style="left:42%; top:10%;">✨</div>
+      <div class="pop" style="left:78%; top:6%;">💖</div>
+    </div>
+
+    <h1>🎁 Surprise Time!</h1>
+    <p>Click a gift box to unlock->Answer the little question to open it 💌</p>
+
+    <div class="stage" role="region" aria-label="Gift boxes">
+      <div class="box" id="box1" tabindex="0" aria-label="Love letter gift box">
+        <div class="lid">Gift Box</div>
+        <div class="ribbon" aria-hidden="true"></div>
+      </div>
+      <div class="box" id="box2" tabindex="0" aria-label="Photo and video gift box">
+        <div class="lid">Gift Box</div>
+        <div class="ribbon" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalWrap" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Question dialog">
+      <div class="question" id="questionText">Question goes here</div>
+      <div class="options" id="options"></div>
+      <div style="margin-top:12px;">
+        <a class="closeBtn" href="#" id="closeModal">Cancel</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalWrap" id="resultModal">
+    <div class="modal" role="dialog" aria-modal="true" id="resultContent">
+    </div>
+  </div>
+
+<script>
+const gates = {
+  box1: {
+    question: "What's our Fav Colour?",
+    options: ["Black", "White", "Yellow", "Orange"],
+    correctAnswer: "White"
+  },
+  box2: {
+    question: "What I Love the most?",
+    options: ["You", "Sleep", "Food", "Games"],
+    correctAnswer: "You"
+  }
+};
+
+const modal = document.getElementById('modal');
+const questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options');
+const closeModal = document.getElementById('closeModal');
+const resultModal = document.getElementById('resultModal');
+const resultContent = document.getElementById('resultContent');
+
+let currentBox = null;
+
+function openGate(boxId) {
+  currentBox = boxId;
+  const gate = gates[boxId];
+  questionText.textContent = gate.question;
+  optionsEl.innerHTML = '';
+
+  gate.options.forEach(opt => {
+    const b = document.createElement('div');
+    b.className = 'opt';
+    b.textContent = opt;
+    b.addEventListener('click', () => {
+      if (opt === gate.correctAnswer) {
+        showBoxContent(boxId);
+      } else {
+        b.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}], {duration:320});
+        alert("Oops that's not it! Try again 😊");
+      }
+    });
+    optionsEl.appendChild(b);
+  });
+
+  modal.style.display = 'flex';
+}
+
+function closeGate() {
+  modal.style.display = 'none';
+}
+
+function showBoxContent(boxId) {
+  closeGate();
+  resultContent.innerHTML = '';
+
+  if (boxId === 'box1') {
+    const title = document.createElement('h2');
+    title.textContent = "💌 Love Letter";
+
+    const subheading = document.createElement('p');
+    subheading.textContent = "Hehehe That toh you will receive in future. Better Luck Next Time.";
+
+    resultContent.appendChild(title);
+    resultContent.appendChild(subheading);
+  } else if (boxId === 'box2') {
+    const title = document.createElement('h2');
+    title.textContent = "📖 Our Story till now";
+
+    const subheading = document.createElement('p');
+    subheading.textContent = "That you received at 12:32am so wait for next birthday.";
+
+    resultContent.appendChild(title);
+    resultContent.appendChild(subheading);
+  }
+
+  const doneBtn = document.createElement('a');
+  doneBtn.href = '#';
+  doneBtn.className = 'closeBtn';
+  doneBtn.textContent = 'Close';
+  doneBtn.addEventListener('click', e => {
+    e.preventDefault();
+    resultModal.style.display = 'none';
+  });
+
+  resultContent.appendChild(doneBtn);
+  resultModal.style.display = 'flex';
+}
+
+document.getElementById('box1').addEventListener('click', () => openGate('box1'));
+document.getElementById('box2').addEventListener('click', () => openGate('box2'));
+closeModal.addEventListener('click', e => { e.preventDefault(); closeGate(); });
+
+resultModal.addEventListener('click', e => {
+  if (e.target === resultModal) resultModal.style.display = 'none';
+});
+modal.addEventListener('click', e => {
+  if (e.target === modal) closeGate();
+});
+</script>
+</body>
+</html>

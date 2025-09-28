@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎉 Happy 19th Birthdayy Lovee! 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ffe6f0, #e6ccff);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      text-align: center;
+    }
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 6s infinite linear;
+      opacity: 0.8;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+    .message-box {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 25px 35px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      max-width: 600px;
+      animation: floatBox 4s ease-in-out infinite;
+    }
+    @keyframes floatBox {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    h1 {
+      font-size: 2rem;
+      color: #b30059;
+      margin-bottom: 15px;
+    }
+    p {
+      font-size: 1.2rem;
+      color: #4d004d;
+      margin: 8px 0;
+    }
+    #counter {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #662200;
+    }
+    .btn {
+      margin-top: 30px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 30px;
+      background: #ff80b3;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      background: #ff4da6;
+    }
+    footer {
+      position: absolute;
+      bottom: 12px;
+      font-size: 0.9rem;
+      color: #800040;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating emojis -->
+  <div class="emoji" style="left:10%;">❤️</div>
+  <div class="emoji" style="left:30%;">💕</div>
+  <div class="emoji" style="left:50%;">💖</div>
+  <div class="emoji" style="left:70%;">🎉</div>
+  <div class="emoji" style="left:90%;">✨</div>
+
+  <!-- Message box -->
+  <div class="message-box">
+    <h1>🎉 Happy 19th Birthdayy Lovee! 🎉</h1>
+    <p>You are my sunshine in the day and my moonlight at night, the stars in my sky that make everything feel right✨❤️</p>
+    <p>Happy Birthdayy, Nupur Mehta WPU 💕</p>
+    <p>Thank you for being youu.. I Love youuu ❤️❤️</p>
+    <div id="counter"></div>
+  </div>
+
+  <!-- Button -->
+  <button class="btn" onclick="window.location.href='celebrate.html'">
+    Let’s Celebrate 🎂
+  </button>
+
+  <footer>
+    Made with ❤️
+  </footer>
+
+  <script>
+    function plural(unit, value) {
+      return value === 1 ? unit : unit + "s";
+    }
+
+    function updateCounter() {
+      const birthDate = new Date(2006, 8, 28, 12, 4, 0); // Sept = 8 in JS
+      const now = new Date();
+
+      let years = now.getFullYear() - birthDate.getFullYear();
+      let months = now.getMonth() - birthDate.getMonth();
+      let days = now.getDate() - birthDate.getDate();
+      let hours = now.getHours() - birthDate.getHours();
+      let minutes = now.getMinutes() - birthDate.getMinutes();
+      let seconds = now.getSeconds() - birthDate.getSeconds();
+
+      if (seconds < 0) {
+        seconds += 60;
+        minutes--;
+      }
+      if (minutes < 0) {
+        minutes += 60;
+        hours--;
+      }
+      if (hours < 0) {
+        hours += 24;
+        days--;
+      }
+      if (days < 0) {
+        const prevMonthDays = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        days += prevMonthDays;
+        months--;
+      }
+      if (months < 0) {
+        months += 12;
+        years--;
+      }
+
+      // After 12:04pm today, let the age update live without clamping
+      // (At exactly 12:04pm it will naturally show 19 years, 0 months, 0 days, 0 hours, 0 minutes, 0 seconds)
+
+      document.getElementById("counter").textContent =
+        `${years} ${plural("year", years)}, `
+        + `${months} ${plural("month", months)}, `
+        + `${days} ${plural("day", days)}, `
+        + `${hours} ${plural("hour", hours)}, `
+        + `${minutes} ${plural("minute", minutes)}, `
+        + `${seconds} ${plural("second", seconds)} old 🎂`;
+    }
+
+    setInterval(updateCounter, 1000);
+    updateCounter();
+  </script>
+
+</body>
+</html>

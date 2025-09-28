@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Celebrate 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ffe6f0, #e6ccff);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Floating hearts + confetti */
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 6s infinite linear;
+      opacity: 0.8;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* Cake container */
+    .cake {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    /* Each slice */
+    .slice {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        #5a2d0c 0%,
+        #5a2d0c 33%,
+        #ffb6c1 33%,
+        #ffb6c1 38%,
+        #5a2d0c 38%,
+        #5a2d0c 71%,
+        #ffb6c1 71%,
+        #ffb6c1 76%,
+        #5a2d0c 76%,
+        #5a2d0c 100%
+      );
+      border-radius: 50%;
+      clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+      transform-origin: 50% 50%;
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+
+    /* Positioning slices around */
+    .slice:nth-child(1) { transform: rotate(0deg); }
+    .slice:nth-child(2) { transform: rotate(45deg); }
+    .slice:nth-child(3) { transform: rotate(90deg); }
+    .slice:nth-child(4) { transform: rotate(135deg); }
+    .slice:nth-child(5) { transform: rotate(180deg); }
+    .slice:nth-child(6) { transform: rotate(225deg); }
+    .slice:nth-child(7) { transform: rotate(270deg); }
+    .slice:nth-child(8) { transform: rotate(315deg); }
+
+    /* Final message */
+    .final-message {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #8b2d5f;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    /* Button */
+    .btn {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 30px;
+      background: #ff80b3;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      background: #ff4da6;
+    }
+  </style>
+  </head>
+  <body>
+
+    <!-- Main heading -->
+    <h1 style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #8b2d5f; font-size: 2.5rem; margin: 0; z-index: 10;">🎂 Virtual Cake Cutting 🎂</h1>
+
+    <!-- Floating emojis -->
+  <div class="emoji" style="left:10%;">❤️</div>
+  <div class="emoji" style="left:30%;">🎊</div>
+  <div class="emoji" style="left:50%;">💕</div>
+  <div class="emoji" style="left:70%;">🎉</div>
+  <div class="emoji" style="left:90%;">💖</div>
+
+  <!-- Cake -->
+  <div class="cake" id="cake">
+    <div class="slice"></div>
+    <div class="slice"></div>
+    <div class="slice"></div>
+    <div class="slice"></div>
+    <div class="slice"></div>
+    <div class="slice"></div>
+    <div class="slice"></div>
+    <div class="slice"></div>
+  </div>
+
+  <!-- Final message -->
+  <div class="final-message" id="finalMessage">
+    ❤️ This last bite is just for you ❤️
+  </div>
+
+  <!-- Surprise button -->
+  <button class="btn" onclick="window.location.href='surprise.html'">
+    It’s Time for a Surprise 💝
+  </button>
+
+  <script>
+    const cake = document.getElementById('cake');
+    const slices = document.querySelectorAll('.slice');
+    const finalMessage = document.getElementById('finalMessage');
+    let removed = 0;
+
+    cake.addEventListener('click', () => {
+      if (removed < slices.length - 1) {
+        slices[removed].style.transform += ' translateY(-200px) rotate(45deg)';
+        slices[removed].style.opacity = '0';
+        removed++;
+      } else if (removed === slices.length - 1) {
+        slices[removed].style.animation = 'bounce 1s infinite';
+        finalMessage.style.opacity = 1;
+        removed++;
+      }
+    });
+
+    // Bounce animation for last slice
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes bounce {
+        0%, 100% { transform: scale(1) rotate(315deg); }
+        50% { transform: scale(1.1) rotate(315deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+
+</body>
+</html>
